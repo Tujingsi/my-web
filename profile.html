@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>檀璟思 · 简历档案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0c12;
+            font-family: 'Courier New', 'Fira Code', 'Segoe UI', monospace;
+            color: #0ff;
+            line-height: 1.5;
+            padding: 2rem;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 动态网格背景 */
+        canvas#bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        /* 扫描线 */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 255, 255, 0.03) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 2;
+            animation: scanMove 8s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 20px; }
+        }
+
+        .resume-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 头部区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #0ff;
+            padding-bottom: 1.5rem;
+        }
+
+        .glitch-name {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #0ff;
+            text-shadow: 0.05em 0 0 #f0f, -0.05em -0.025em 0 #0ff;
+            animation: glitchShake 0.3s infinite alternate;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes glitchShake {
+            0% { transform: skew(0deg, 0deg); }
+            100% { transform: skew(2deg, 1deg); }
+        }
+
+        .title {
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #f0f;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: #0ff;
+        }
+
+        .contact span {
+            border-right: 1px solid #0ff;
+            padding-right: 1rem;
+        }
+        .contact span:last-child { border: none; }
+
+        /* 卡片样式（简历区块） */
+        .section-card {
+            background: rgba(10, 20, 30, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid #0ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
+            transition: 0.2s;
+        }
+
+        .section-card:hover {
+            box-shadow: 0 0 22px #0ff;
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            color: #f0f;
+            font-size: 1.5rem;
+            border-left: 4px solid #0ff;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* 条目样式 */
+        .entry {
+            margin-bottom: 1.2rem;
+        }
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+        .entry-title {
+            color: #0ff;
+            font-size: 1.1rem;
+        }
+        .entry-date {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        .entry-sub {
+            color: #f0f;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        .entry-desc {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-left: 1rem;
+            list-style-type: none;
+        }
+        .entry-desc li {
+            margin-bottom: 0.3rem;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+        .entry-desc li::before {
+            content: ">";
+            color: #0ff;
+            position: absolute;
+            left: 0;
+        }
+
+        /* 技能网格 */
+        .skills-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+        .skill-tag {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #0ff;
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+        .skill-tag:hover {
+            background: #0ff;
+            color: #000;
+            box-shadow: 0 0 8px #0ff;
+            cursor: default;
+        }
+
+        /* 进度条（语言能力等） */
+        .lang-item {
+            margin-bottom: 0.8rem;
+        }
+        .lang-name {
+            display: inline-block;
+            width: 100px;
+            font-weight: bold;
+        }
+        .lang-bar {
+            display: inline-block;
+            width: 200px;
+            background: #1a1e2a;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        .lang-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ff, #f0f);
+            width: 0%;
+        }
+
+        .back-btn {
+            background: transparent;
+            border: 2px solid #0ff;
+            color: #0ff;
+            padding: 10px 24px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 1rem;
+            letter-spacing: 2px;
+            display: block;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .back-btn:hover {
+            background: #0ff;
+            color: #000;
+            box-shadow: 0 0 20px #0ff;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1rem; }
+            .glitch-name { font-size: 2rem; }
+            .contact { flex-direction: column; align-items: center; gap: 0.5rem; }
+            .contact span { border: none; }
+            .lang-bar { width: 120px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="bgCanvas"></canvas>
+    <div class="scan-line"></div>
+
+    <div class="resume-container">
+        <div class="header">
+            <div class="glitch-name">檀璟思</div>
+            <div class="title">全栈开发工程师 / 前端架构师</div>
+            <div class="contact">
+                <span>📱 +86 123 4567 8901</span>
+                <span>📧 jingsi.tan@dev.me</span>
+                <span>🌐 github.com/jingsi</span>
+                <span>📍 中国 · 上海</span>
+            </div>
+        </div>
+
+        <!-- 教育背景 -->
+        <div class="section-card">
+            <div class="section-title">🎓 教育经历</div>
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-title">昆明大学</span>
+                    <span class="entry-date">2016 – 2020</span>
+                </div>
+                <div class="entry-sub">计算机科学与技术 学士学位 | GPA 3.8/4.0</div>
+                <ul class="entry-desc">
+                    <li>主修课程：数据结构、操作系统、计算机网络、Web开发</li>
+                    <li>毕业设计：《基于React的实时数据可视化仪表板》获院级优秀设计（虚拟）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 工作经验 -->
+        <div class="section-card">
+            <div class="section-title">💼 工作经验</div>
+            
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-title">高级前端工程师 - 极光科技（虚拟）</span>
+                    <span class="entry-date">2022.04 – 至今</span>
+                </div>
+                <ul class="entry-desc">
+                    <li>负责公司核心产品“智联云平台”的前端架构设计，使用React+TypeScript+Redux Toolkit，组件复用率提升30%</li>
+                    <li>带领3人小团队完成数据可视化大屏项目，实现WebGL高性能渲染，客户满意度达98%</li>
+                    <li>制定前端代码规范，引入ESLint + Prettier，推动单元测试覆盖率从45%提升至82%</li>
+                </ul>
+            </div>
+
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-title">全栈开发（实习） - 杭州字节梦网络</span>
+                    <span class="entry-date">2020.07 – 2022.01</span>
+                </div>
+                <ul class="entry-desc">
+                    <li>参与企业官网与管理后台的开发，基于Vue2 + Element UI，配合后端完成API对接</li>
+                    <li>独立开发内容发布系统和权限管理模块，支持多角色动态路由</li>
+                    <li>优化前端打包配置（Webpack），首屏加载时间减少27%</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 项目经验 -->
+        <div class="section-card">
+            <div class="section-title">🚀 项目精选</div>
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-title">赛博朋克风格个人网站</span>
+                    <span class="entry-date">2025.01 – 至今</span>
+                </div>
+                <ul class="entry-desc">
+                    <li>独立开发全栈个人品牌网站，前端使用HTML5/CSS3原生+Canvas动效，后端使用Node.js+Express</li>
+                    <li>实现故障文字、动态网格、扫描线等视觉效果，响应式设计适配移动端</li>
+                    <li>网站平均加载时间1.2秒，每月访问量约3000+</li>
+                </ul>
+            </div>
+            <div class="entry">
+                <div class="entry-header">
+                    <span class="entry-title">企业级BI数据分析平台</span>
+                    <span class="entry-date">2023.09 – 2024.05</span>
+                </div>
+                <ul class="entry-desc">
+                    <li>基于React + Ant Design + ECharts，构建可拖拽式仪表板，支持多维度数据下钻</li>
+                    <li>封装通用图表组件库，减少重复代码约40%，获得公司技术突破奖</li>
+                    <li>使用WebSocket实现实时数据推送</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 专业技能 -->
+        <div class="section-card">
+            <div class="section-title">🔧 专业技能</div>
+            <div class="skills-grid">
+                <span class="skill-tag">JavaScript / TypeScript</span>
+                <span class="skill-tag">React / Next.js</span>
+                <span class="skill-tag">Vue3 / Pinia</span>
+                <span class="skill-tag">Node.js / Express</span>
+                <span class="skill-tag">HTML5 / CSS3 / Canvas</span>
+                <span class="skill-tag">Webpack / Vite</span>
+                <span class="skill-tag">Git / GitHub Actions</span>
+                <span class="skill-tag">Python / Flask</span>
+                <span class="skill-tag">MySQL / MongoDB</span>
+                <span class="skill-tag">Figma / 故障艺术设计</span>
+            </div>
+        </div>
+
+        <!-- 语言与证书 -->
+        <div class="section-card">
+            <div class="section-title">📜 语言 & 证书</div>
+            <div class="lang-item">
+                <span class="lang-name">英语 (CET-4)</span>
+                <div class="lang-bar"><div class="lang-fill" style="width: 85%;"></div></div>
+                <span style="margin-left: 10px;">读写流利，技术文档无碍</span>
+            </div>
+            <div class="lang-item">
+                <span class="lang-name">普通话 (母语)</span>
+                <div class="lang-bar"><div class="lang-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="skills-grid" style="margin-top: 15px;">
+                <span class="skill-tag">阿里云ACA认证</span>
+                <span class="skill-tag">前端架构师（暂无）</span>
+                <span class="skill-tag">Scrum Master 认证</span>
+            </div>
+        </div>
+
+        <button class="back-btn" id="backBtn">⟳ 返回上级档案 ⟳</button>
+        <footer>&lt; 简历版本 2026.06 &gt;   // 加密信道已关闭 //</footer>
+    </div>
+
+    <script>
+        // 动态网格背景
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawGrid();
+        }
+        function drawGrid() {
+            if (!ctx) return;
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            ctx.strokeStyle = '#0ff';
+            ctx.lineWidth = 0.5;
+            const step = 45;
+            ctx.beginPath();
+            for (let x = 0; x < w; x += step) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+            for (let y = 0; y < h; y += step) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+            ctx.stroke();
+            // 流动光点
+            const time = Date.now() / 400;
+            for (let i = 0; i < 60; i++) {
+                const tx = (time + i * 31) % w;
+                const ty = (time * 0.8 + i * 71) % h;
+                ctx.fillStyle = `rgba(0, 255, 255, 0.5)`;
+                ctx.fillRect(tx-1, ty-1, 2, 2);
+            }
+        }
+        function animate() { drawGrid(); requestAnimationFrame(animate); }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        animate();
+
+        // 返回按钮：跳回 about.html（档案总览页）
+        const backBtn = document.getElementById('backBtn');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                // 故障特效
+                const flash = document.createElement('div');
+                flash.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,255,255,0.2);pointer-events:none;z-index:1000';
+                document.body.appendChild(flash);
+                setTimeout(() => {
+                    window.location.href = 'about.html';
+                }, 150);
+            });
+        }
+
+        // 随机视觉闪烁（可选）
+        setInterval(() => {
+            if (Math.random() > 0.92) {
+                const flicker = document.createElement('div');
+                flicker.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.04);pointer-events:none;z-index:999';
+                document.body.appendChild(flicker);
+                setTimeout(() => flicker.remove(), 70);
+            }
+        }, 2500);
+    </script>
+</body>
+</html>

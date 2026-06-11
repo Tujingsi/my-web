@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>赛博朋克 - 檀璟思档案</title>
+    <link rel="stylesheet" href="about.css">
+</head>
+<body>
+    <canvas id="gridCanvas"></canvas>
+    <div class="scan-line"></div>
+
+    <main class="cyber-container">
+        <div class="glitch-wrapper">
+            <h1 class="glitch-text" data-text="ID_PROFILE">ID_PROFILE</h1>
+        </div>
+        <p class="subtitle">// 身份信息已解密 //</p>
+
+        <!-- 全息头像 -->
+        <div class="hologram">
+            <div class="avatar-ring">
+                <div class="avatar-pulse"></div>
+                <span class="avatar-label">[ 神经接口 ]</span>
+            </div>
+        </div>
+
+        <!-- 个人信息卡片 - 标题已改为“檀璟思档案” -->
+        <div class="info-card">
+            <div class="card-header">
+                <span class="led-red"></span>
+                <span class="led-green"></span>
+                <span class="led-blue"></span>
+                <span class="card-title">[ 檀璟思档案 ]</span>   <!-- 修改点 -->
+            </div>
+            <div class="card-content">
+                <p><span class="tag">代号</span> <span class="neon-text">GHOST_IN_THE_SHELL</span></p>
+                <p><span class="tag">身份</span> 全栈开发 / 赛博行者</p>
+                <p><span class="tag">技能树</span> React, Python, 霓虹美学, 故障艺术</p>
+                <p><span class="tag">接入点</span> <span id="location">未知城市 · 地下网络</span></p>
+                <div class="stats">
+                    <div>入侵经验: ▰▰▰▰▰▰▰▰▰▰ 98%</div>
+                    <div>加密破解: ▰▰▰▰▰▰▰▰▱▱ 84%</div>
+                </div>
+                <!-- 按钮文字改为“查看档案” -->
+                <button id="viewProfileBtn" class="cyber-btn">⌇ 查看档案 ⌇</button>
+            </div>
+        </div>
+
+        <!-- 格言 -->
+        <div class="quote">
+            <pre>&gt; 代码即武器，霓虹即信仰。</pre>
+            <pre>&gt; 在数据的洪流中，我即规则。</pre>
+        </div>
+
+        <footer class="cyber-footer">
+            <span>&lt; 神经链接稳定 &gt;</span>
+            <span>// 加密信道已开启 //</span>
+        </footer>
+    </main>
+
+    <script src="about.js"></script>
+</body>
+</html>
